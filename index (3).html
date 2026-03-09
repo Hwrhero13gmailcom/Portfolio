@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>resterphobic_gd — Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:         #0d0608;
+      --surface:    #130a0d;
+      --surface2:   #1a0e12;
+      --border:     rgba(220, 120, 150, 0.12);
+      --pink:       #e8829a;
+      --pink-light: #f2afc0;
+      --pink-dim:   rgba(232, 130, 154, 0.1);
+      --petal1:     #d4607a;
+      --petal2:     #f0a0b8;
+      --petal3:     #fce4ec;
+      --cream:      #f5e6ea;
+      --text:       #e8d5d9;
+      --muted:      #7a5060;
+      --glow:       0 0 40px rgba(232, 130, 154, 0.2);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ── Cursor ── */
+    #cursor {
+      position: fixed; width: 8px; height: 8px;
+      background: var(--pink-light);
+      border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: transform 0.1s;
+      box-shadow: 0 0 10px var(--pink), 0 0 20px rgba(232,130,154,0.4);
+    }
+    #cursor-ring {
+      position: fixed; width: 32px; height: 32px;
+      border: 1px solid rgba(232,130,154,0.35);
+      border-radius: 50%;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%,-50%);
+      transition: all 0.13s ease;
+    }
+
+    /* ── Canvas ── */
+    #bg-canvas { position: fixed; inset: 0; z-index: 0; }
+
+    /* ── Grain ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 1; opacity: 0.5;
+    }
+
+    main { position: relative; z-index: 10; }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.4rem 3.5rem;
+      background: rgba(13,6,8,0.75);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.78rem; font-weight: 500;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--pink); text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem; font-weight: 400;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); text-decoration: none;
+      transition: color 0.2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute;
+      bottom: -3px; left: 0; right: 0;
+      height: 1px; background: var(--pink);
+      transform: scaleX(0); transition: transform 0.25s;
+    }
+    .nav-links a:hover { color: var(--pink-light); }
+    .nav-links a:hover::after { transform: scaleX(1); }
+
+    /* ── Sections ── */
+    section {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 8rem 4rem;
+      max-width: 1080px; margin: 0 auto;
+    }
+
+    /* ── Section headers ── */
+    .section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem; font-weight: 400;
+      letter-spacing: 0.35em; text-transform: uppercase;
+      color: var(--pink); margin-bottom: 0.6rem;
+      display: flex; align-items: center; gap: 0.8rem;
+    }
+    .section-label::after {
+      content: ''; flex: 1; max-width: 48px;
+      height: 1px; background: var(--pink); opacity: 0.35;
+    }
+    .section-title {
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      font-weight: 300; font-style: italic;
+      color: var(--cream); line-height: 1.05;
+      margin-bottom: 3rem;
+    }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 0 4rem;
+      max-width: 1080px; margin: 0 auto;
+      gap: 1.8rem;
+    }
+    .hero-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem; letter-spacing: 0.3em;
+      text-transform: uppercase; color: var(--pink);
+      opacity: 0; animation: fadeUp 0.9s 0.2s forwards;
+    }
+    .hero-name {
+      font-size: clamp(3.5rem, 9vw, 8rem);
+      font-weight: 300; font-style: italic;
+      line-height: 0.9; color: var(--cream);
+      opacity: 0; animation: fadeUp 0.9s 0.4s forwards;
+    }
+    .hero-name em { color: var(--pink); font-style: italic; }
+    .hero-sub {
+      font-size: 1.15rem; font-weight: 300;
+      color: var(--muted); max-width: 500px;
+      line-height: 1.75;
+      opacity: 0; animation: fadeUp 0.9s 0.6s forwards;
+    }
+    .hero-tags {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+      opacity: 0; animation: fadeUp 0.9s 0.8s forwards;
+    }
+    .tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.35rem 0.85rem;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: var(--pink-dim);
+      transition: all 0.2s; border-radius: 0;
+    }
+    .tag:hover { color: var(--pink-light); border-color: var(--pink); }
+    .hero-cta {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp 0.9s 1s forwards;
+    }
+    .btn {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.85rem 2rem; text-decoration: none;
+      transition: all 0.25s; display: inline-block;
+    }
+    .btn-primary { background: var(--pink); color: #0d0608; }
+    .btn-primary:hover { background: var(--pink-light); box-shadow: var(--glow); }
+    .btn-secondary { border: 1px solid var(--pink); color: var(--pink); background: transparent; }
+    .btn-secondary:hover { background: var(--pink-dim); box-shadow: var(--glow); }
+
+    /* ── About ── */
+    .about-grid {
+      display: grid; grid-template-columns: 260px 1fr;
+      gap: 5rem; align-items: center;
+    }
+    .avatar-wrap { position: relative; }
+    .avatar-frame {
+      width: 240px; height: 280px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; position: relative;
+    }
+    .avatar-frame::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(232,130,154,0.08), transparent 60%);
+    }
+    .avatar-frame img { width: 100%; height: 100%; object-fit: cover; }
+    .avatar-placeholder {
+      font-size: 5rem; font-weight: 300; font-style: italic;
+      color: var(--pink); opacity: 0.2;
+      font-family: 'Cormorant Garamond', serif;
+    }
+    .avatar-deco {
+      position: absolute; bottom: -1px; left: -1px; right: -1px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--petal1), var(--petal2), transparent);
+    }
+    .about-text p {
+      font-size: 1.05rem; line-height: 1.85;
+      color: var(--muted); margin-bottom: 1.2rem;
+    }
+    .about-text p strong { color: var(--text); font-weight: 600; }
+    .about-text p em { color: var(--pink-light); font-style: italic; }
+
+    /* ── Stats strip ── */
+    .stats-strip {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 1px; background: var(--border);
+      border: 1px solid var(--border); margin-top: 3rem;
+    }
+    .stat-item {
+      background: var(--surface); padding: 1.5rem;
+      text-align: center; transition: background 0.2s;
+    }
+    .stat-item:hover { background: var(--pink-dim); }
+    .stat-num {
+      font-size: 2.2rem; font-weight: 300; font-style: italic;
+      color: var(--pink-light); display: block;
+    }
+    .stat-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--muted);
+      margin-top: 0.3rem; display: block;
+    }
+
+    /* ── Project ── */
+    .project-card {
+      border: 1px solid var(--border);
+      background: var(--surface); padding: 3rem;
+      position: relative; overflow: hidden;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .project-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, var(--petal1), var(--petal2), transparent);
+    }
+    .project-card:hover { border-color: rgba(232,130,154,0.3); box-shadow: var(--glow); }
+    .project-header {
+      display: flex; justify-content: space-between;
+      align-items: flex-start; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;
+    }
+    .project-title {
+      font-size: 1.9rem; font-weight: 300; font-style: italic;
+      color: var(--cream);
+    }
+    .project-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase;
+      padding: 0.3rem 0.8rem;
+      background: var(--pink-dim); border: 1px solid var(--pink);
+      color: var(--pink);
+    }
+    .project-desc {
+      font-size: 1rem; line-height: 1.85;
+      color: var(--muted); margin-bottom: 2rem; max-width: 700px;
+    }
+    .project-features {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr));
+      gap: 0.75rem; margin-bottom: 2rem;
+    }
+    .feature-item {
+      display: flex; align-items: flex-start; gap: 0.75rem;
+      font-size: 0.9rem; color: var(--muted); line-height: 1.5;
+    }
+    .feature-dot {
+      width: 5px; height: 5px; min-width: 5px;
+      background: var(--pink); border-radius: 50%;
+      margin-top: 0.5rem; box-shadow: 0 0 6px var(--pink);
+    }
+    .tech-stack { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .tech-pill {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.1em;
+      padding: 0.3rem 0.75rem;
+      background: rgba(212,96,122,0.1);
+      border: 1px solid rgba(212,96,122,0.3);
+      color: var(--petal1);
+    }
+
+    /* ── Achievements ── */
+    .achievements-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(290px,1fr));
+      gap: 1.2rem;
+    }
+    .achievement-card {
+      border: 1px solid var(--border); background: var(--surface);
+      padding: 2rem; transition: all 0.3s;
+      position: relative;
+    }
+    .achievement-card::after {
+      content: ''; position: absolute; top: 0; left: 0;
+      width: 2px; height: 0;
+      background: linear-gradient(180deg, var(--pink), transparent);
+      transition: height 0.4s;
+    }
+    .achievement-card:hover {
+      border-color: rgba(232,130,154,0.25);
+      box-shadow: var(--glow); transform: translateY(-2px);
+    }
+    .achievement-card:hover::after { height: 100%; }
+    .achievement-icon {
+      width: 36px; height: 36px; margin-bottom: 1rem;
+      color: var(--pink);
+    }
+    .achievement-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem; font-weight: 500;
+      color: var(--pink-light); letter-spacing: 0.05em;
+      margin-bottom: 0.6rem; text-transform: uppercase;
+    }
+    .achievement-desc { font-size: 0.92rem; line-height: 1.7; color: var(--muted); }
+
+    /* ── Grab VR ── */
+    .grabvr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+    .grabvr-card {
+      border: 1px solid var(--border); background: var(--surface);
+      padding: 2.5rem; position: relative;
+    }
+    .grabvr-card::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+      width: 1px;
+      background: linear-gradient(180deg, var(--pink), transparent);
+    }
+    .grabvr-card-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--pink); margin-bottom: 1.5rem;
+    }
+    .grabvr-stat {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.8rem 0; border-bottom: 1px solid var(--border);
+      font-size: 0.92rem;
+    }
+    .grabvr-stat:last-child { border-bottom: none; }
+    .grabvr-stat-label { color: var(--muted); }
+    .grabvr-stat-value {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem; font-weight: 500; color: var(--pink-light);
+    }
+
+    /* ── Contact ── */
+    .contact-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
+    .contact-text { font-size: 1rem; line-height: 1.85; color: var(--muted); margin-bottom: 1.2rem; }
+    .contact-links { display: flex; flex-direction: column; gap: 0.8rem; }
+    .contact-link {
+      display: flex; align-items: center; gap: 1.2rem;
+      padding: 1.1rem 1.5rem;
+      border: 1px solid var(--border); background: var(--surface);
+      text-decoration: none; transition: all 0.25s; color: var(--text);
+    }
+    .contact-link:hover {
+      border-color: var(--pink); background: var(--pink-dim);
+      color: var(--pink-light); box-shadow: var(--glow);
+      transform: translateX(5px);
+    }
+    .contact-link svg { flex-shrink: 0; }
+    .contact-link-text { font-size: 0.92rem; font-weight: 600; }
+    .contact-link-sub { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--muted); letter-spacing: 0.05em; }
+
+    /* ── Footer ── */
+    footer {
+      position: relative; z-index: 10;
+      text-align: center; padding: 2rem;
+      border-top: 1px solid var(--border);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.1em; color: var(--muted);
+    }
+    footer a { color: var(--pink); text-decoration: none; }
+
+    /* ── Divider ── */
+    .petal-divider {
+      display: flex; align-items: center; gap: 1rem;
+      margin: 1rem 0;
+    }
+    .petal-divider::before, .petal-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.75s ease, transform 0.75s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── Music Player ── */
+    #music-player {
+      position: fixed;
+      bottom: 2rem; right: 2rem;
+      z-index: 200;
+      width: 300px;
+      background: rgba(19,10,13,0.92);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(24px);
+      box-shadow: var(--glow), 0 8px 40px rgba(0,0,0,0.5);
+      overflow: hidden;
+    }
+    #music-player::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, var(--petal1), var(--petal2), transparent);
+    }
+    .player-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.9rem 1.1rem 0;
+    }
+    .player-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.55rem; letter-spacing: 0.25em;
+      text-transform: uppercase; color: var(--pink);
+    }
+    .player-toggle {
+      background: none; border: none; cursor: none;
+      color: var(--muted); transition: color 0.2s; padding: 0;
+      display: flex; align-items: center;
+    }
+    .player-toggle:hover { color: var(--pink-light); }
+    .player-body { padding: 0.8rem 1.1rem 1rem; }
+    .player-track {
+      margin-bottom: 0.8rem;
+    }
+    .player-title {
+      font-size: 0.95rem; font-weight: 600; font-style: italic;
+      color: var(--cream); white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+    .player-artist {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem; color: var(--muted); letter-spacing: 0.08em;
+      margin-top: 0.15rem;
+    }
+    .player-progress {
+      width: 100%; height: 2px;
+      background: rgba(232,130,154,0.15);
+      border-radius: 2px; margin-bottom: 0.75rem;
+      cursor: pointer; position: relative;
+    }
+    .player-progress-fill {
+      height: 100%; background: linear-gradient(90deg, var(--petal1), var(--petal2));
+      border-radius: 2px; width: 0%; transition: width 0.2s linear;
+      pointer-events: none;
+    }
+    .player-controls {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .player-btn {
+      background: none; border: none; cursor: none;
+      color: var(--muted); transition: color 0.2s;
+      display: flex; align-items: center; padding: 0;
+    }
+    .player-btn:hover { color: var(--pink-light); }
+    .player-btn.play-btn {
+      width: 34px; height: 34px;
+      border: 1px solid var(--border); border-radius: 50%;
+      background: var(--pink-dim); justify-content: center;
+      color: var(--pink);
+    }
+    .player-btn.play-btn:hover {
+      background: var(--pink); color: #0d0608;
+      box-shadow: var(--glow);
+    }
+    .player-time {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem; color: var(--muted); letter-spacing: 0.05em;
+    }
+    .player-vol {
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+    .player-vol input[type=range] {
+      -webkit-appearance: none; width: 55px; height: 2px;
+      background: rgba(232,130,154,0.2); border-radius: 2px; cursor: pointer;
+    }
+    .player-vol input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 8px; height: 8px;
+      background: var(--pink); border-radius: 50%;
+    }
+    .player-minimized .player-body { display: none; }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { gap: 1.5rem; }
+      #hero, section { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .about-grid, .grabvr-grid, .contact-inner { grid-template-columns: 1fr; }
+      .stats-strip { grid-template-columns: repeat(2,1fr); }
+      .avatar-frame { width: 180px; height: 210px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<canvas id="bg-canvas"></canvas>
+
+<nav>
+  <a href="#hero" class="nav-logo">rstr_gd</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#project">Project</a></li>
+    <li><a href="#vr">VR</a></li>
+    <li><a href="#grabvr">Grab VR</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <!-- HERO -->
+  <div id="hero">
+    <p class="hero-eyebrow">// VR Creator · Developer · Competitor</p>
+    <h1 class="hero-name">rester<em>phobic</em><br/>_gd</h1>
+    <p class="hero-sub">Building things for the Grab VR community. Verified creator, marketplace founder, competitive VR player — based in Québec, Canada.</p>
+    <div class="hero-tags">
+      <span class="tag">Grab VR</span>
+      <span class="tag">Discord Bots</span>
+      <span class="tag">Node.js</span>
+      <span class="tag">Luau</span>
+      <span class="tag">VRML</span>
+      <span class="tag">Beat Saber</span>
+      <span class="tag">Breachers</span>
+      <span class="tag">Volleyball</span>
+    </div>
+    <div class="hero-cta">
+      <a href="#project" class="btn btn-primary">View Project</a>
+      <a href="#contact" class="btn btn-secondary">Get in Touch</a>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="reveal">
+      <p class="section-label">01 — About</p>
+      <h2 class="section-title">Who I Am</h2>
+    </div>
+    <div class="about-grid reveal">
+      <div class="avatar-wrap">
+        <div class="avatar-frame">
+          <img id="discord-avatar" src="" alt="resterphobic_gd" style="width:100%;height:100%;object-fit:cover;display:none;" />
+          <span id="avatar-fallback" class="avatar-placeholder">R</span>
+          <div class="avatar-deco"></div>
+        </div>
+      </div>
+      <div class="about-text">
+        <p>Hey, I'm <strong>resterphobic_gd</strong> — a Grab VR creator, Discord community builder, and competitive VR player from <strong>Québec, Canada</strong>.</p>
+        <p>I founded the <strong>Grab VR Unofficial Marketplace</strong> from scratch — designing the server, building the bot, writing the rules, and managing every aspect of the community. The bot handles hiring flows, reputation tracking, badge systems, dispute resolution, and persistent data storage.</p>
+        <p>Before this, I was <strong>Head Administrator, Head Designer, and Coordinator</strong> for the Penguin Paradise Pro League — the first and most successful pro league for the game, reaching 500+ members.</p>
+        <p>On the development side, I'm semi-experienced in <strong>JavaScript / Node.js</strong>, <strong>Luau</strong>, and have a background in <strong>C#, Python, and HTML/CSS</strong>. Still learning — but I ship things that work.</p>
+        <p>Outside the headset, I play <strong>volleyball</strong> and I'm a huge dog person. I lost my first dog <em>Hero</em> — he meant everything and I carry that name with me. 🌸</p>
+      </div>
+    </div>
+    <div class="stats-strip reveal">
+      <div class="stat-item"><span class="stat-num">40+</span><span class="stat-label">Verified Levels</span></div>
+      <div class="stat-item"><span class="stat-num">500+</span><span class="stat-label">Members Led</span></div>
+      <div class="stat-item"><span class="stat-num">Top 6K</span><span class="stat-label">Beat Saber Global</span></div>
+      <div class="stat-item"><span class="stat-num">2</span><span class="stat-label">Grab VR Accounts</span></div>
+    </div>
+  </section>
+
+  <!-- PROJECT -->
+  <section id="project">
+    <div class="reveal">
+      <p class="section-label">02 — Project</p>
+      <h2 class="section-title">GVUM Bot</h2>
+    </div>
+    <div class="project-card reveal">
+      <div class="project-header">
+        <span class="project-title">Grab VR Unofficial Marketplace</span>
+        <span class="project-badge">Live</span>
+      </div>
+      <p class="project-desc">A fully custom Discord marketplace bot built from scratch for the Grab VR community. Powers the entire creator economy — guided listing flows, private hire threads, reputation tracking, badge systems, disputes, and more. Every feature designed and coordinated by me using Node.js and Discord.js v14.</p>
+      <div class="project-features">
+        <div class="feature-item"><span class="feature-dot"></span><span>10-step DM listing flows with progress bars</span></div>
+        <div class="feature-item"><span class="feature-dot"></span><span>Modal-first hire & apply thread system</span></div>
+        <div class="feature-item"><span class="feature-dot"></span><span>Star rating & reputation system</span></div>
+        <div class="feature-item"><span class="feature-dot"></span><span>Ambassador, Verified & Booster tiers</span></div>
+        <div class="feature-item"><span class="feature-dot"></span><span>Two-party job done confirmation</span></div>
+        <div class="feature-item"><span class="feature-dot"></span><span>Persistent JSON storage across restarts</span></div>
+        <div class="feature-item"><span class="feature-dot"></span><span>Dynamic cooldowns per role tier</span></div>
+        <div class="feature-item"><span class="feature-dot"></span><span>Mod tools, blacklist & dispute system</span></div>
+        <div class="feature-item"><span class="feature-dot"></span><span>Automated escrow & expiry reminders</span></div>
+        <div class="feature-item"><span class="feature-dot"></span><span>Weekly digest & category subscriptions</span></div>
+      </div>
+      <div class="tech-stack">
+        <span class="tech-pill">Node.js</span>
+        <span class="tech-pill">Discord.js v14</span>
+        <span class="tech-pill">REST API</span>
+        <span class="tech-pill">JSON Storage</span>
+        <span class="tech-pill">dotenv</span>
+      </div>
+      <div style="margin-top:2rem; display:flex; gap:1rem; flex-wrap:wrap;">
+        <a href="https://discord.gg/Pujk6aSCMJ" target="_blank" class="btn btn-primary" style="font-size:0.62rem;">Join the Server</a>
+        <a href="https://tinyurl.com/2xs3ajmb" target="_blank" class="btn btn-secondary" style="font-size:0.62rem;">View on GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- VR ACHIEVEMENTS -->
+  <section id="vr">
+    <div class="reveal">
+      <p class="section-label">03 — Competitive VR</p>
+      <h2 class="section-title">Achievements</h2>
+    </div>
+    <div class="achievements-grid reveal">
+
+      <div class="achievement-card">
+        <!-- Beat Saber icon -->
+        <svg class="achievement-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+        </svg>
+        <p class="achievement-title">Beat Saber — Top 6,000 Global</p>
+        <p class="achievement-desc">Ranked in the top 6,000 players worldwide in Beat Saber — a game with millions of active players across the globe.</p>
+      </div>
+
+      <div class="achievement-card">
+        <!-- Racing / VRML icon -->
+        <svg class="achievement-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/><path d="M3.05 11H5m14 0h1.95M12 3.05V5m0 14v1.95"/>
+        </svg>
+        <p class="achievement-title">VRML — Orion Drift Team Owner</p>
+        <p class="achievement-desc">Owner of an Orion Drift team competing in the VR Master League — one of the most recognised competitive VR organisations.</p>
+      </div>
+
+      <div class="achievement-card">
+        <!-- Tactical / Breachers icon -->
+        <svg class="achievement-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <p class="achievement-title">Competitive Breachers</p>
+        <p class="achievement-desc">Active competitive player in Breachers, the premier tactical VR shooter. Playing at a high level in organised matches.</p>
+      </div>
+
+      <div class="achievement-card">
+        <!-- Trophy icon -->
+        <svg class="achievement-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M8 21h8m-4-4v4M5 3H3v5a4 4 0 004 4h.5M19 3h2v5a4 4 0 01-4 4h-.5"/><path d="M7 3h10v6a5 5 0 01-10 0V3z"/>
+        </svg>
+        <p class="achievement-title">Penguin Paradise Pro League</p>
+        <p class="achievement-desc">Head Administrator, Head Designer & Coordinator for the first and most successful pro league for the game. 500+ members at peak.</p>
+      </div>
+
+      <div class="achievement-card">
+        <!-- Community / Server icon -->
+        <svg class="achievement-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+        </svg>
+        <p class="achievement-title">GTC Gorilla Tag Community</p>
+        <p class="achievement-desc">Managed a GTC Gorilla Tag competitive server — handling organisation and operations for a competitive VR community.</p>
+      </div>
+
+      <div class="achievement-card">
+        <!-- Globe / Founder icon -->
+        <svg class="achievement-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/>
+        </svg>
+        <p class="achievement-title">GVUM — Community Founder</p>
+        <p class="achievement-desc">Founded and built the Grab VR Unofficial Marketplace from zero — the first dedicated marketplace server for the Grab VR ecosystem.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- GRAB VR STATS -->
+  <section id="grabvr">
+    <div class="reveal">
+      <p class="section-label">04 — Grab VR</p>
+      <h2 class="section-title">Creator Profile</h2>
+    </div>
+    <div class="grabvr-grid reveal">
+      <div class="grabvr-card">
+        <p class="grabvr-card-title">// Account Stats</p>
+        <div class="grabvr-stat"><span class="grabvr-stat-label">Status</span><span class="grabvr-stat-value">Verified Creator</span></div>
+        <div class="grabvr-stat"><span class="grabvr-stat-label">Total Verified Levels</span><span class="grabvr-stat-value">40+</span></div>
+        <div class="grabvr-stat"><span class="grabvr-stat-label">Active Accounts</span><span class="grabvr-stat-value">2</span></div>
+        <div class="grabvr-stat"><span class="grabvr-stat-label">Platform</span><span class="grabvr-stat-value">grabvr.quest</span></div>
+      </div>
+      <div class="grabvr-card">
+        <p class="grabvr-card-title">// Community Role</p>
+        <div class="grabvr-stat"><span class="grabvr-stat-label">Marketplace Role</span><span class="grabvr-stat-value">Founder & Owner</span></div>
+        <div class="grabvr-stat"><span class="grabvr-stat-label">Server</span><span class="grabvr-stat-value">GVUM</span></div>
+        <div class="grabvr-stat"><span class="grabvr-stat-label">Bot</span><span class="grabvr-stat-value">GVUM Bot (custom)</span></div>
+        <div class="grabvr-stat"><span class="grabvr-stat-label">YouTube</span><span class="grabvr-stat-value">550+ Subscribers</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="reveal">
+      <p class="section-label">05 — Contact</p>
+      <h2 class="section-title">Get in Touch</h2>
+    </div>
+    <div class="contact-inner reveal">
+      <div>
+        <p class="contact-text">Whether you want to hire me, join the marketplace, or just connect — reach out below. The best way to get me is through Discord.</p>
+        <p class="contact-text">My usual active time is <strong style="color:var(--pink-light)">7:00 PM my time</strong> — that's <strong id="local-7pm" style="color:var(--pink-light)">calculating...</strong> in your local time.</p>
+        <p class="contact-text" style="font-family:'DM Mono',monospace; font-size:0.72rem; color:var(--pink); letter-spacing:0.1em;">// Available for Grab VR commissions &amp; community work</p>
+      </div>
+      <div class="contact-links">
+
+        <a href="https://guns.lol/only.extrovert" target="_blank" class="contact-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" color="var(--pink)">
+            <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/>
+          </svg>
+          <div><div class="contact-link-text">Portfolio</div><div class="contact-link-sub">guns.lol/only.extrovert</div></div>
+        </a>
+
+        <a href="https://discord.gg/Pujk6aSCMJ" target="_blank" class="contact-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" color="var(--pink)">
+            <path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.03.055a19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z"/>
+          </svg>
+          <div><div class="contact-link-text">GVUM Discord</div><div class="contact-link-sub">Grab VR Unofficial Marketplace</div></div>
+        </a>
+
+        <a href="https://tinyurl.com/2xs3ajmb" target="_blank" class="contact-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" color="var(--pink)">
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/>
+          </svg>
+          <div><div class="contact-link-text">Bot Repository</div><div class="contact-link-sub">GVUM Bot — GitHub</div></div>
+        </a>
+
+        <a href="https://grabvr.quest" target="_blank" class="contact-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" color="var(--pink)">
+            <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+          </svg>
+          <div><div class="contact-link-text">Grab VR</div><div class="contact-link-sub">grabvr.quest</div></div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Music Player -->
+<div id="music-player">
+  <div class="player-header">
+    <span class="player-label">Now Playing</span>
+    <button class="player-toggle" id="player-minimize-btn" title="Minimize">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>
+    </button>
+  </div>
+  <div class="player-body">
+    <div class="player-track">
+      <div class="player-title" id="player-title">Something About You</div>
+      <div class="player-artist" id="player-artist">Eyesore</div>
+    </div>
+    <div class="player-progress" id="player-progress">
+      <div class="player-progress-fill" id="player-fill"></div>
+    </div>
+    <div class="player-controls">
+      <button class="player-btn" id="prev-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 20L9 12l10-8v16z"/><line x1="5" y1="4" x2="5" y2="20"/></svg>
+      </button>
+      <button class="player-btn play-btn" id="play-btn">
+        <svg id="play-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+        <svg id="pause-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+      </button>
+      <button class="player-btn" id="next-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 4l10 8-10 8V4z"/><line x1="19" y1="4" x2="19" y2="20"/></svg>
+      </button>
+      <span class="player-time"><span id="p-cur">0:00</span> / <span id="p-dur">0:00</span></span>
+      <div class="player-vol">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" color="var(--muted)"><polygon points="11,5 6,9 2,9 2,15 6,15 11,19"/><path d="M15.54 8.46a5 5 0 010 7.07M19.07 4.93a10 10 0 010 14.14"/></svg>
+        <input type="range" id="vol-slider" min="0" max="1" step="0.02" value="0.7" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>resterphobic_gd &nbsp;·&nbsp; Québec, Canada &nbsp;·&nbsp; Built with <a href="https://anthropic.com" target="_blank">Claude by Anthropic</a> &nbsp;·&nbsp; Not affiliated with Grab VR</p>
+</footer>
+
+<script>
+  // ── Cursor ────────────────────────────────────────────────────────
+  const cursor = document.getElementById('cursor');
+  const ring   = document.getElementById('cursor-ring');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove', e => {
+    mx=e.clientX; my=e.clientY;
+    cursor.style.left=mx+'px'; cursor.style.top=my+'px';
+  });
+  (function animRing(){ rx+=(mx-rx)*0.13; ry+=(my-ry)*0.13;
+    ring.style.left=rx+'px'; ring.style.top=ry+'px';
+    requestAnimationFrame(animRing); })();
+  document.querySelectorAll('a,button').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{ cursor.style.transform='translate(-50%,-50%) scale(2.2)'; ring.style.borderColor='rgba(232,130,154,0.7)'; });
+    el.addEventListener('mouseleave',()=>{ cursor.style.transform='translate(-50%,-50%) scale(1)'; ring.style.borderColor='rgba(232,130,154,0.35)'; });
+  });
+
+  // ── Cherry blossom canvas ─────────────────────────────────────────
+  const canvas = document.getElementById('bg-canvas');
+  const ctx    = canvas.getContext('2d');
+  function resize(){ canvas.width=window.innerWidth; canvas.height=window.innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+
+  // Petals
+  const PETAL_COLORS = ['rgba(232,130,154,', 'rgba(240,160,184,', 'rgba(212,96,122,', 'rgba(252,228,236,'];
+  const petals = Array.from({length:55}, ()=>({
+    x: Math.random()*window.innerWidth,
+    y: Math.random()*window.innerHeight,
+    size: Math.random()*5+3,
+    rot: Math.random()*Math.PI*2,
+    rotSpeed: (Math.random()-0.5)*0.015,
+    vy: Math.random()*0.5+0.2,
+    vx: (Math.random()-0.5)*0.4,
+    sway: Math.random()*0.008+0.003,
+    swayOffset: Math.random()*Math.PI*2,
+    color: PETAL_COLORS[Math.floor(Math.random()*PETAL_COLORS.length)],
+    alpha: Math.random()*0.35+0.1,
+  }));
+
+  function drawPetal(p, t) {
+    ctx.save();
+    ctx.translate(p.x + Math.sin(t*p.sway + p.swayOffset)*18, p.y);
+    ctx.rotate(p.rot);
+    ctx.beginPath();
+    // Simple elliptical petal shape
+    ctx.ellipse(0, 0, p.size, p.size*0.55, 0, 0, Math.PI*2);
+    ctx.fillStyle = p.color + p.alpha + ')';
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // Floating orbs (soft bokeh)
+  const orbs = Array.from({length:8}, ()=>({
+    x: Math.random()*window.innerWidth,
+    y: Math.random()*window.innerHeight,
+    r: Math.random()*120+60,
+    alpha: Math.random()*0.04+0.01,
+    speed: Math.random()*0.0003+0.0001,
+    offset: Math.random()*Math.PI*2,
+  }));
+
+  let t=0;
+  function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    // Orbs
+    orbs.forEach(o=>{
+      const pulse = o.alpha + Math.sin(t*o.speed*10+o.offset)*0.01;
+      const grad = ctx.createRadialGradient(o.x,o.y,0,o.x,o.y,o.r);
+      grad.addColorStop(0,`rgba(232,130,154,${pulse})`);
+      grad.addColorStop(1,'transparent');
+      ctx.fillStyle=grad;
+      ctx.beginPath(); ctx.arc(o.x,o.y,o.r,0,Math.PI*2); ctx.fill();
+    });
+
+    // Petals
+    petals.forEach(p=>{
+      p.y += p.vy;
+      p.x += p.vx;
+      p.rot += p.rotSpeed;
+      if(p.y > canvas.height+20){ p.y=-10; p.x=Math.random()*canvas.width; }
+      if(p.x > canvas.width+20) p.x=-10;
+      if(p.x < -20) p.x=canvas.width+10;
+      drawPetal(p, t);
+    });
+
+    // Subtle grid
+    ctx.strokeStyle='rgba(232,130,154,0.025)';
+    ctx.lineWidth=1;
+    const gs=70;
+    for(let x=0;x<canvas.width;x+=gs){ ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,canvas.height);ctx.stroke(); }
+    for(let y=0;y<canvas.height;y+=gs){ ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(canvas.width,y);ctx.stroke(); }
+
+    t+=0.016;
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  // ── Scroll reveal ─────────────────────────────────────────────────
+  const io = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); }});
+  },{threshold:0.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  // ── Lanyard — fetch Discord avatar ───────────────────────────────
+  const DISCORD_ID = '1076249558125912155';
+  fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
+    .then(r => r.json())
+    .then(d => {
+      if (d.success) {
+        const u = d.data.discord_user;
+        const hash = u.avatar;
+        const ext  = hash && hash.startsWith('a_') ? 'gif' : 'png';
+        const url  = `https://cdn.discordapp.com/avatars/${DISCORD_ID}/${hash}.${ext}?size=1024`;
+        const img  = document.getElementById('discord-avatar');
+        const fallback = document.getElementById('avatar-fallback');
+        img.src = url;
+        img.onload  = () => { img.style.display = 'block'; fallback.style.display = 'none'; };
+        img.onerror = () => { img.style.display = 'none';  fallback.style.display = 'block'; };
+      }
+    })
+    .catch(() => {});
+
+  // ── Music Player ──────────────────────────────────────────────────
+  const TRACKS = [
+    { title: 'Something About You', artist: 'Eyesore',      src: 'song1.mp3' },
+    { title: 'Chandelier',          artist: 'Will Paquin',  src: 'song2.mp3' },
+  ];
+
+  let currentTrack = 0;
+  let isPlaying    = false;
+  const audio      = new Audio();
+  audio.volume     = 0.7;
+
+  const playBtn    = document.getElementById('play-btn');
+  const playIcon   = document.getElementById('play-icon');
+  const pauseIcon  = document.getElementById('pause-icon');
+  const prevBtn    = document.getElementById('prev-btn');
+  const nextBtn    = document.getElementById('next-btn');
+  const titleEl    = document.getElementById('player-title');
+  const artistEl   = document.getElementById('player-artist');
+  const fillEl     = document.getElementById('player-fill');
+  const progressEl = document.getElementById('player-progress');
+  const curEl      = document.getElementById('p-cur');
+  const durEl      = document.getElementById('p-dur');
+  const volSlider  = document.getElementById('vol-slider');
+  const minBtn     = document.getElementById('player-minimize-btn');
+  const player     = document.getElementById('music-player');
+
+  function fmtTime(s) {
+    if (isNaN(s)) return '0:00';
+    const m = Math.floor(s/60);
+    const sec = String(Math.floor(s%60)).padStart(2,'0');
+    return `${m}:${sec}`;
+  }
+
+  function loadTrack(idx) {
+    const t   = TRACKS[idx];
+    audio.src = t.src;
+    titleEl.textContent  = t.title;
+    artistEl.textContent = t.artist;
+    fillEl.style.width   = '0%';
+    curEl.textContent    = '0:00';
+    durEl.textContent    = '0:00';
+  }
+
+  function setPlaying(val) {
+    isPlaying = val;
+    playIcon.style.display  = val ? 'none'  : 'block';
+    pauseIcon.style.display = val ? 'block' : 'none';
+  }
+
+  playBtn.addEventListener('click', () => {
+    if (isPlaying) { audio.pause(); setPlaying(false); }
+    else           { audio.play().catch(()=>{}); setPlaying(true); }
+  });
+
+  prevBtn.addEventListener('click', () => {
+    currentTrack = (currentTrack - 1 + TRACKS.length) % TRACKS.length;
+    loadTrack(currentTrack);
+    if (isPlaying) audio.play().catch(()=>{});
+  });
+
+  nextBtn.addEventListener('click', () => {
+    currentTrack = (currentTrack + 1) % TRACKS.length;
+    loadTrack(currentTrack);
+    if (isPlaying) audio.play().catch(()=>{});
+  });
+
+  audio.addEventListener('ended', () => {
+    currentTrack = (currentTrack + 1) % TRACKS.length;
+    loadTrack(currentTrack);
+    audio.play().catch(()=>{});
+  });
+
+  audio.addEventListener('timeupdate', () => {
+    if (!audio.duration) return;
+    const pct = (audio.currentTime / audio.duration) * 100;
+    fillEl.style.width  = pct + '%';
+    curEl.textContent   = fmtTime(audio.currentTime);
+    durEl.textContent   = fmtTime(audio.duration);
+  });
+
+  progressEl.addEventListener('click', e => {
+    const rect = progressEl.getBoundingClientRect();
+    const pct  = (e.clientX - rect.left) / rect.width;
+    audio.currentTime = pct * audio.duration;
+  });
+
+  volSlider.addEventListener('input', () => { audio.volume = volSlider.value; });
+
+  // Minimize toggle
+  let minimized = false;
+  minBtn.addEventListener('click', () => {
+    minimized = !minimized;
+    player.classList.toggle('player-minimized', minimized);
+    minBtn.innerHTML = minimized
+      ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 15l7-7 7 7"/></svg>'
+      : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>';
+  });
+
+  loadTrack(0);
+
+  // ── Timezone: resterphobic's 7PM EST → visitor local ─────────────
+  try {
+    const MY_TZ = "America/Toronto";
+    const today = new Date().toLocaleDateString("en-CA",{timeZone:MY_TZ});
+    const their7pm = new Date(today + "T19:00:00");
+    const offset = new Date(new Date().toLocaleString("en-US",{timeZone:MY_TZ})) - new Date();
+    const localStr = new Date(their7pm.getTime() - offset).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',timeZoneName:'short'});
+    document.getElementById('local-7pm').textContent = localStr;
+  } catch(e){
+    document.getElementById('local-7pm').textContent = '7:00 PM EST';
+  }
+</script>
+</body>
+</html>
