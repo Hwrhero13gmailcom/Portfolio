@@ -4,6 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>resterphobic_gd — Portfolio</title>
+
+  <!-- OG / Discord embed tags -->
+  <meta property="og:title"       content="resterphobic_gd — Portfolio" />
+  <meta property="og:description" content="Grab VR Verified Creator · GVUM Founder · Competitive VR Player from Québec, Canada" />
+  <meta property="og:image"       content="https://cdn.discordapp.com/avatars/1076249558125912155/avatar.png?size=512" />
+  <meta property="og:url"         content="https://guns.lol/only.extrovert" />
+  <meta property="og:type"        content="website" />
+  <meta name="theme-color"        content="#e8829a" />
+  <meta name="twitter:card"       content="summary" />
+  <meta name="twitter:title"      content="resterphobic_gd — Portfolio" />
+  <meta name="twitter:description" content="Grab VR Verified Creator · GVUM Founder · Competitive VR Player" />
+  <meta name="twitter:image"      content="https://cdn.discordapp.com/avatars/1076249558125912155/avatar.png?size=512" />
+
+  <!-- Favicon — inline SVG petal -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><ellipse cx='50' cy='50' rx='30' ry='48' fill='%23e8829a' transform='rotate(-20 50 50)'/><ellipse cx='50' cy='50' rx='30' ry='48' fill='%23f2afc0' opacity='0.7' transform='rotate(20 50 50)'/><circle cx='50' cy='50' r='8' fill='%23fce4ec'/></svg>" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
@@ -334,6 +350,7 @@
 
     /* ── Grab VR ── */
     .grabvr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+    .grabvr-grid-3 { grid-template-columns: repeat(3, 1fr); }
     .grabvr-card {
       border: 1px solid var(--border); background: var(--surface);
       padding: 2.5rem; position: relative;
@@ -397,6 +414,117 @@
     .petal-divider::before, .petal-divider::after {
       content: ''; flex: 1; height: 1px; background: var(--border);
     }
+
+    /* ── Scroll to top ── */
+    #scroll-top {
+      position: fixed; bottom: 2rem; left: 2rem; z-index: 200;
+      width: 40px; height: 40px;
+      background: var(--surface); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      cursor: none; transition: all 0.3s; color: var(--muted);
+      opacity: 0; pointer-events: none;
+    }
+    #scroll-top.visible { opacity: 1; pointer-events: all; }
+    #scroll-top:hover { background: var(--pink-dim); border-color: var(--pink); color: var(--pink); box-shadow: var(--glow); }
+
+    /* ── Mobile cursor fix ── */
+    @media (hover: none) { body { cursor: auto; } #cursor, #cursor-ring { display: none; } }
+
+    /* ── Loading screen ── */
+    #loader {
+      position: fixed; inset: 0; z-index: 9000;
+      background: var(--bg);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 1.5rem;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+    #loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .loader-petals {
+      display: flex; gap: 0.5rem;
+    }
+    .loader-petal {
+      width: 10px; height: 16px;
+      background: var(--pink);
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      opacity: 0;
+      animation: petalDrop 1.2s ease infinite;
+    }
+    .loader-petal:nth-child(1) { animation-delay: 0s;    background: var(--petal1); }
+    .loader-petal:nth-child(2) { animation-delay: 0.15s; background: var(--petal2); }
+    .loader-petal:nth-child(3) { animation-delay: 0.3s;  background: var(--pink); }
+    .loader-petal:nth-child(4) { animation-delay: 0.45s; background: var(--petal2); }
+    .loader-petal:nth-child(5) { animation-delay: 0.6s;  background: var(--petal1); }
+    @keyframes petalDrop {
+      0%   { opacity: 0; transform: translateY(-10px) rotate(-15deg); }
+      40%  { opacity: 1; }
+      100% { opacity: 0; transform: translateY(20px) rotate(15deg); }
+    }
+    .loader-text {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.35em;
+      text-transform: uppercase; color: var(--muted);
+      animation: pulse 1.5s ease infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+
+    /* ── Presence badge ── */
+    .presence-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem; letter-spacing: 0.1em;
+      padding: 0.35rem 0.8rem;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      margin-top: 0.5rem;
+      opacity: 0; animation: fadeUp 0.9s 1.2s forwards;
+    }
+    .presence-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--muted); flex-shrink: 0;
+      transition: background 0.4s;
+    }
+    .presence-dot.online  { background: #57f287; box-shadow: 0 0 6px #57f287; }
+    .presence-dot.idle    { background: #fee75c; box-shadow: 0 0 6px #fee75c; }
+    .presence-dot.dnd     { background: #ed4245; box-shadow: 0 0 6px #ed4245; }
+    .presence-dot.offline { background: #555; }
+
+    /* ── Active nav ── */
+    .nav-links a.active { color: var(--pink-light); }
+    .nav-links a.active::after { transform: scaleX(1); }
+
+    /* ── Hamburger nav ── */
+    .nav-hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: none; padding: 4px;
+    }
+    .nav-hamburger span {
+      display: block; width: 22px; height: 1px;
+      background: var(--pink); transition: all 0.3s;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+    .nav-mobile {
+      display: none; position: fixed;
+      top: 58px; left: 0; right: 0;
+      background: rgba(13,6,8,0.97);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border);
+      flex-direction: column; z-index: 99;
+      padding: 1rem 0;
+    }
+    .nav-mobile.open { display: flex; }
+    .nav-mobile a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--muted);
+      text-decoration: none; padding: 0.9rem 2rem;
+      border-bottom: 1px solid var(--border);
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-mobile a:last-child { border-bottom: none; }
+    .nav-mobile a:hover { color: var(--pink-light); background: var(--pink-dim); }
 
     /* ── Animations ── */
     @keyframes fadeUp {
@@ -503,15 +631,28 @@
     /* ── Responsive ── */
     @media (max-width: 768px) {
       nav { padding: 1rem 1.5rem; }
-      .nav-links { gap: 1.5rem; }
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
       #hero, section { padding-left: 1.5rem; padding-right: 1.5rem; }
-      .about-grid, .grabvr-grid, .contact-inner { grid-template-columns: 1fr; }
+      .about-grid, .grabvr-grid, .grabvr-grid-3, .contact-inner { grid-template-columns: 1fr; }
       .stats-strip { grid-template-columns: repeat(2,1fr); }
       .avatar-frame { width: 180px; height: 210px; }
+      #music-player { width: calc(100vw - 2rem); right: 1rem; bottom: 1rem; }
     }
   </style>
 </head>
 <body>
+
+<div id="loader">
+  <div class="loader-petals">
+    <div class="loader-petal"></div>
+    <div class="loader-petal"></div>
+    <div class="loader-petal"></div>
+    <div class="loader-petal"></div>
+    <div class="loader-petal"></div>
+  </div>
+  <span class="loader-text">Loading...</span>
+</div>
 
 <div id="cursor"></div>
 <div id="cursor-ring"></div>
@@ -526,7 +667,19 @@
     <li><a href="#grabvr">Grab VR</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
+  <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<!-- Mobile nav -->
+<div class="nav-mobile" id="mobile-nav">
+  <a href="#about"   onclick="closeMobileNav()">About</a>
+  <a href="#project" onclick="closeMobileNav()">Project</a>
+  <a href="#vr"      onclick="closeMobileNav()">VR</a>
+  <a href="#grabvr"  onclick="closeMobileNav()">Grab VR</a>
+  <a href="#contact" onclick="closeMobileNav()">Contact</a>
+</div>
 
 <main>
 
@@ -534,11 +687,14 @@
   <div id="hero">
     <p class="hero-eyebrow">// VR Creator · Developer · Competitor</p>
     <h1 class="hero-name">rester<em>phobic</em><br/>_gd</h1>
+    <div class="presence-badge" id="presence-badge">
+      <span class="presence-dot" id="presence-dot"></span>
+      <span id="presence-text">Fetching status...</span>
+    </div>
     <p class="hero-sub">Building things for the Grab VR community. Verified creator, marketplace founder, competitive VR player — based in Québec, Canada.</p>
     <div class="hero-tags">
       <span class="tag">Grab VR</span>
       <span class="tag">Discord Bots</span>
-      <span class="tag">Node.js</span>
       <span class="tag">Luau</span>
       <span class="tag">VRML</span>
       <span class="tag">Beat Saber</span>
@@ -569,7 +725,7 @@
         <p>Hey, I'm <strong>resterphobic_gd</strong> — a Grab VR creator, Discord community builder, and competitive VR player from <strong>Québec, Canada</strong>.</p>
         <p>I founded the <strong>Grab VR Unofficial Marketplace</strong> from scratch — designing the server, building the bot, writing the rules, and managing every aspect of the community. The bot handles hiring flows, reputation tracking, badge systems, dispute resolution, and persistent data storage.</p>
         <p>Before this, I was <strong>Head Administrator, Head Designer, and Coordinator</strong> for the Penguin Paradise Pro League — the first and most successful pro league for the game, reaching 500+ members.</p>
-        <p>On the development side, I'm semi-experienced in <strong>JavaScript / Node.js</strong>, <strong>Luau</strong>, and have a background in <strong>C#, Python, and HTML/CSS</strong>. Still learning — but I ship things that work.</p>
+        <p>On the development side, I know <strong>Luau</strong> and have a bit of knowledge in <strong>HTML</strong>. Still early in my dev journey — but I build things that work and I'm always learning.</p>
         <p>Outside the headset, I play <strong>volleyball</strong> and I'm a huge dog person. I lost my first dog <em>Hero</em> — he meant everything and I carry that name with me. 🌸</p>
       </div>
     </div>
@@ -692,13 +848,28 @@
       <p class="section-label">04 — Grab VR</p>
       <h2 class="section-title">Creator Profile</h2>
     </div>
-    <div class="grabvr-grid reveal">
+    <div class="grabvr-grid grabvr-grid-3 reveal">
       <div class="grabvr-card">
-        <p class="grabvr-card-title">// Account Stats</p>
-        <div class="grabvr-stat"><span class="grabvr-stat-label">Status</span><span class="grabvr-stat-value">Verified Creator</span></div>
-        <div class="grabvr-stat"><span class="grabvr-stat-label">Total Verified Levels</span><span class="grabvr-stat-value">40+</span></div>
-        <div class="grabvr-stat"><span class="grabvr-stat-label">Active Accounts</span><span class="grabvr-stat-value">2</span></div>
+        <p class="grabvr-card-title">// Main Account</p>
+        <div class="grabvr-stat"><span class="grabvr-stat-label">Status</span><span class="grabvr-stat-value">✅ Verified Creator</span></div>
+        <div class="grabvr-stat"><span class="grabvr-stat-label">Total Plays</span><span class="grabvr-stat-value">25,144</span></div>
+        <div class="grabvr-stat"><span class="grabvr-stat-label">Unique Plays</span><span class="grabvr-stat-value">21,403</span></div>
+        <div class="grabvr-stat"><span class="grabvr-stat-label">Total Finishes</span><span class="grabvr-stat-value">3,373</span></div>
+        <div class="grabvr-stat"><span class="grabvr-stat-label">Unique Finishes</span><span class="grabvr-stat-value">2,527</span></div>
+        <div class="grabvr-stat"><span class="grabvr-stat-label">Likes Received</span><span class="grabvr-stat-value">1,365</span></div>
+        <div class="grabvr-stat"><span class="grabvr-stat-label">Tips Received 💸</span><span class="grabvr-stat-value">293</span></div>
+        <div style="margin-top:1.2rem;">
+          <a href="https://grabvr.quest/levels?tab=tab_other_user&user_id=2cj4z99vtw60g1k3bptfh" target="_blank" class="btn btn-secondary" style="font-size:0.58rem; padding:0.5rem 1rem;">View Profile</a>
+        </div>
+      </div>
+      <div class="grabvr-card">
+        <p class="grabvr-card-title">// Second Account</p>
+        <div class="grabvr-stat"><span class="grabvr-stat-label">Status</span><span class="grabvr-stat-value">✅ Verified Creator</span></div>
+        <div class="grabvr-stat"><span class="grabvr-stat-label">Verified Levels</span><span class="grabvr-stat-value">40+ combined</span></div>
         <div class="grabvr-stat"><span class="grabvr-stat-label">Platform</span><span class="grabvr-stat-value">grabvr.quest</span></div>
+        <div style="margin-top:1.2rem;">
+          <a href="https://grabvr.quest/levels?tab=tab_other_user&user_id=2e76xew1fbk8xkgmnflqs" target="_blank" class="btn btn-secondary" style="font-size:0.58rem; padding:0.5rem 1rem;">View Profile</a>
+        </div>
       </div>
       <div class="grabvr-card">
         <p class="grabvr-card-title">// Community Role</p>
@@ -706,6 +877,9 @@
         <div class="grabvr-stat"><span class="grabvr-stat-label">Server</span><span class="grabvr-stat-value">GVUM</span></div>
         <div class="grabvr-stat"><span class="grabvr-stat-label">Bot</span><span class="grabvr-stat-value">GVUM Bot (custom)</span></div>
         <div class="grabvr-stat"><span class="grabvr-stat-label">YouTube</span><span class="grabvr-stat-value">550+ Subscribers</span></div>
+        <div style="margin-top:1.2rem;">
+          <a href="https://studio.youtube.com/channel/UCp2Tb0K6lshgYBS-ofK7mgQ" target="_blank" class="btn btn-secondary" style="font-size:0.58rem; padding:0.5rem 1rem;">YouTube Channel</a>
+        </div>
       </div>
     </div>
   </section>
@@ -745,11 +919,19 @@
           <div><div class="contact-link-text">Bot Repository</div><div class="contact-link-sub">GVUM Bot — GitHub</div></div>
         </a>
 
-        <a href="https://grabvr.quest" target="_blank" class="contact-link">
+        <a href="https://grabvr.quest/levels?tab=tab_other_user&user_id=2cj4z99vtw60g1k3bptfh" target="_blank" class="contact-link">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" color="var(--pink)">
             <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
           </svg>
-          <div><div class="contact-link-text">Grab VR</div><div class="contact-link-sub">grabvr.quest</div></div>
+          <div><div class="contact-link-text">Grab VR Profile</div><div class="contact-link-sub">Main account — grabvr.quest</div></div>
+        </a>
+
+        <a href="https://studio.youtube.com/channel/UCp2Tb0K6lshgYBS-ofK7mgQ" target="_blank" class="contact-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" color="var(--pink)">
+            <path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 00-1.95 1.96A29 29 0 001 12a29 29 0 00.46 5.58a2.78 2.78 0 001.95 1.95C5.12 20 12 20 12 20s6.88 0 8.59-.47a2.78 2.78 0 001.95-1.95A29 29 0 0023 12a29 29 0 00-.46-5.58z"/>
+            <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" stroke="none"/>
+          </svg>
+          <div><div class="contact-link-text">YouTube</div><div class="contact-link-sub">550+ subscribers</div></div>
         </a>
 
       </div>
@@ -757,6 +939,11 @@
   </section>
 
 </main>
+
+<!-- Scroll to top -->
+<button id="scroll-top" aria-label="Scroll to top">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
+</button>
 
 <!-- Music Player -->
 <div id="music-player">
@@ -902,24 +1089,109 @@
   },{threshold:0.12});
   document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
-  // ── Lanyard — fetch Discord avatar ───────────────────────────────
+  // ── Scroll to top ────────────────────────────────────────────────
+  const scrollTopBtn = document.getElementById('scroll-top');
+  window.addEventListener('scroll', () => {
+    scrollTopBtn.classList.toggle('visible', window.scrollY > 400);
+  });
+  scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+  // ── Loader ────────────────────────────────────────────────────────
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('loader').classList.add('hidden');
+    }, 1200);
+  });
+
+  // ── Hamburger menu ────────────────────────────────────────────────
+  const hamburger  = document.getElementById('hamburger');
+  const mobileNav  = document.getElementById('mobile-nav');
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('open');
+    mobileNav.classList.toggle('open');
+  });
+  function closeMobileNav() {
+    hamburger.classList.remove('open');
+    mobileNav.classList.remove('open');
+  }
+
+  // ── Active nav on scroll ──────────────────────────────────────────
+  const sections  = document.querySelectorAll('section[id], div[id="hero"]');
+  const navLinks  = document.querySelectorAll('.nav-links a');
+  const scrollSpy = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        const active = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { threshold: 0.4 });
+  sections.forEach(s => scrollSpy.observe(s));
+
+  // ── Tab title flicker when out of focus ───────────────────────────
+  const originalTitle = document.title;
+  const altTitle      = '🌸 come back~';
+  document.addEventListener('visibilitychange', () => {
+    document.title = document.hidden ? altTitle : originalTitle;
+  });
+
+  // ── Lanyard — presence + avatar ───────────────────────────────────
   const DISCORD_ID = '1076249558125912155';
+
+  function applyPresence(data) {
+    const dot    = document.getElementById('presence-dot');
+    const text   = document.getElementById('presence-text');
+    const status = data.discord_status; // online / idle / dnd / offline
+    dot.className = 'presence-dot ' + status;
+    const activity = data.activities?.find(a => a.type === 0);
+    const statusLabels = { online: 'Online', idle: 'Away', dnd: 'Do Not Disturb', offline: 'Offline' };
+    text.textContent = activity
+      ? `Playing ${activity.name}`
+      : statusLabels[status] || 'Offline';
+  }
+
+  // Fetch once
   fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
     .then(r => r.json())
     .then(d => {
-      if (d.success) {
-        const u = d.data.discord_user;
-        const hash = u.avatar;
-        const ext  = hash && hash.startsWith('a_') ? 'gif' : 'png';
-        const url  = `https://cdn.discordapp.com/avatars/${DISCORD_ID}/${hash}.${ext}?size=1024`;
-        const img  = document.getElementById('discord-avatar');
-        const fallback = document.getElementById('avatar-fallback');
+      if (!d.success) return;
+      // Avatar
+      const u    = d.data.discord_user;
+      const hash = u.avatar;
+      if (hash) {
+        const ext = hash.startsWith('a_') ? 'gif' : 'png';
+        const url = `https://cdn.discordapp.com/avatars/${DISCORD_ID}/${hash}.${ext}?size=1024`;
+        const img = document.getElementById('discord-avatar');
+        const fb  = document.getElementById('avatar-fallback');
         img.src = url;
-        img.onload  = () => { img.style.display = 'block'; fallback.style.display = 'none'; };
-        img.onerror = () => { img.style.display = 'none';  fallback.style.display = 'block'; };
+        img.onload  = () => { img.style.display='block'; fb.style.display='none'; };
+        img.onerror = () => { img.style.display='none';  fb.style.display='block'; };
+        // Also update OG image dynamically (for next load)
+        document.querySelector('meta[property="og:image"]')?.setAttribute('content', url);
       }
+      // Presence
+      applyPresence(d.data);
     })
-    .catch(() => {});
+    .catch(() => {
+      document.getElementById('presence-text').textContent = 'resterphobic_gd';
+    });
+
+  // Live presence via Lanyard WebSocket
+  try {
+    const ws = new WebSocket('wss://api.lanyard.rest/socket');
+    ws.onmessage = e => {
+      const msg = JSON.parse(e.data);
+      if (msg.op === 1) {
+        // Send heartbeat + subscribe
+        ws.send(JSON.stringify({ op: 2, d: { subscribe_to_id: DISCORD_ID } }));
+        setInterval(() => ws.send(JSON.stringify({ op: 3 })), msg.d.heartbeat_interval);
+      }
+      if ((msg.op === 0) && msg.d?.discord_status) {
+        applyPresence(msg.d);
+      }
+    };
+  } catch(e) {}
 
   // ── Music Player ──────────────────────────────────────────────────
   const TRACKS = [
